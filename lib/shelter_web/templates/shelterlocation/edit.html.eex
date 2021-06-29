@@ -1,0 +1,5 @@
+<h1>Edit Shelterlocation</h1>
+
+<%= render "form.html", Map.put(assigns, :action, Routes.shelterlocation_path(@conn, :update, @shelterlocation)) %>
+
+<span><%= link "Back", to: Routes.shelterlocation_path(@conn, :index) %></span>

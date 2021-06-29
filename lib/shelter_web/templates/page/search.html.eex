@@ -1,0 +1,62 @@
+<%
+    deta = Enum.filter(@shelterlocation, & if &1.designatedWardCity == @params do &1 end)
+    IO.inspect(deta)
+%>
+
+
+<form>
+<input type="text" name="street" placeholder="東京都墨田区押上1-1-2" value="<%= @streetAddres %>">
+<p>住所を入力すると周辺の避難場所が表示されます。</p>
+<input type="submit" value="検索">
+</form>
+
+<section class="phx-hero">
+    <h1><%= gettext "%{name}避難場所", name: @params %></h1>
+    <p>検索地：<%= @streetAddres %></p>
+</section>
+
+
+<div id="map"></div>
+
+<table>
+    <thead>
+    <tr>
+        <th>避難場所名称</th>
+        <th>地方公共団体コード</th>
+        <th>都道府県</th>
+        <th>指定区市町村</th>
+        <th>住所</th>
+    </tr>
+    </thead>
+<tbody>
+<%= for shelterlocation <- deta do %>
+    <tr>
+        <td><%= shelterlocation.shelterName %></td>
+        <td><%= shelterlocation.governmentCode %></td>
+        <td><%= shelterlocation.prefectures %></td>
+        <td><%= shelterlocation.designatedWardCity %></td>
+        <td><%= shelterlocation.streetAddress %></td>
+    </tr>
+<% end %>
+    </tbody>
+</table>
+
+
+
+<script>
+
+    var map = L.map('map').setView([<%= @location.lat %>, <%= @location.long %>], 13);
+    //var map = L.map('map').setView([35.726012, 139.579484], 15);
+
+    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+        attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+    }).addTo(map);
+
+<%= for location <- deta do %>
+
+    L.marker([<%= location.lat%>, <%= location.long%>]).addTo(map)
+        .bindPopup('<%= location.shelterName %><br><%= location.streetAddress %>', {autoClose: false, closeOnClick: false})
+        .openPopup();
+<% end %>
+</script>
+

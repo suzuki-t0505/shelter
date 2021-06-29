@@ -1,0 +1,84 @@
+<%
+  deta = Enum.filter(@shelterlocation, & if &1.designatedWardCity == @params do &1 end)
+  #deta = @shelterlocation
+  #if @streetAddres == "" do
+  [first | tail] = deta
+  #end
+
+  streets = 
+  Enum.map(@shelterlocation, & &1.designatedWardCity)
+  |> Enum.uniq()
+  
+%>
+
+
+<form>
+<select name="street">
+<%= for street <- streets do %>
+<option value="<%= street %>"><%= street %></option>
+<% end %>
+</select>
+<!--
+<input type="text" name="streetAddres" value="東京都練馬区関町北1-18-8">
+-->
+<input type="submit" value="検索">
+</form>
+<!--
+<form>
+<input type="text" name="street" value="杉並区">
+<input type="submit" value="検索">
+<form>
+-->
+
+<section class="phx-hero">
+  <%= if @params != "" do%>
+  <h1><%= gettext "%{name}避難場所", name: @params %></h1>
+  <% else %>
+  <h1><%= gettext "%{name}避難場所", name: "練馬区" %></h1>
+  <% end %>
+</section>
+
+
+<div id="map"></div>
+
+<table>
+  <thead>
+    <tr>
+      <th>避難場所名称</th>
+      <th>地方公共団体コード</th>
+      <th>都道府県</th>
+      <th>指定区市町村</th>
+      <th>住所</th>
+    </tr>
+  </thead>
+  <tbody>
+<%= for shelterlocation <- deta do %>
+    <tr>
+      <td><%= shelterlocation.shelterName %></td>
+      <td><%= shelterlocation.governmentCode %></td>
+      <td><%= shelterlocation.prefectures %></td>
+      <td><%= shelterlocation.designatedWardCity %></td>
+      <td><%= shelterlocation.streetAddress %></td>
+    </tr>
+<% end %>
+  </tbody>
+</table>
+
+
+
+<script>
+
+  var map = L.map('map').setView([<%= first.lat %>, <%= first.long%>], 13);
+
+  L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+      attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+  }).addTo(map);
+
+<%= for loction <- deta do %>
+
+  L.marker([<%= loction.lat%>, <%= loction.long%>]).addTo(map)
+      .bindPopup('<%= loction.shelterName %><br><%= loction.streetAddress %>', {autoClose: false, closeOnClick: false})
+      .openPopup();
+<% end %>
+</script>
+

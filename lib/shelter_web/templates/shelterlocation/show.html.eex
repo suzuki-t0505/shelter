@@ -1,0 +1,13 @@
+<h1>Show Shelterlocation</h1>
+
+<ul>
+
+  <li>
+    <strong>Sheltername:</strong>
+    <%= @shelterlocation.sheltername %>
+  </li>
+
+</ul>
+
+<span><%= link "Edit", to: Routes.shelterlocation_path(@conn, :edit, @shelterlocation) %></span>
+<span><%= link "Back", to: Routes.shelterlocation_path(@conn, :index) %></span>

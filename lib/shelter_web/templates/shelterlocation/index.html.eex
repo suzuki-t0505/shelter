@@ -1,0 +1,61 @@
+<%
+  deta = Enum.filter(@shelterlocation, & if &1.designatedWardCity == "練馬区" do &1 end)
+  #deta = @shelterlocation
+  [first | tail] = deta
+%>
+
+<h1>避難場所一覧</h1>
+<div id="map"></div>
+<table>
+  <thead>
+    <tr>
+      <th>避難場所名称</th>
+      <th>地方公共団体コード</th>
+      <th>都道府県</th>
+      <th>指定区市町村</th>
+      <th>住所</th>
+      <th>緯度</th>
+      <th>経度</th>
+
+      <th></th>
+    </tr>
+  </thead>
+  <tbody>
+<%= for shelterlocation <- deta do %>
+    <tr>
+      <td><%= shelterlocation.shelterName %></td>
+      <td><%= shelterlocation.governmentCode %></td>
+      <td><%= shelterlocation.prefectures %></td>
+      <td><%= shelterlocation.designatedWardCity %></td>
+      <td><%= shelterlocation.streetAddress %></td>
+      <td><%= shelterlocation.lat %></td>
+      <td><%= shelterlocation.long %></td>
+      <td>
+      <!---
+        <span><%= link "Show", to: Routes.shelterlocation_path(@conn, :show, shelterlocation) %></span>
+        <span><%= link "Edit", to: Routes.shelterlocation_path(@conn, :edit, shelterlocation) %></span>
+        <span><%= link "Delete", to: Routes.shelterlocation_path(@conn, :delete, shelterlocation), method: :delete, data: [confirm: "Are you sure?"] %></span>
+      -->
+      </td>
+    </tr>
+<% end %>
+  </tbody>
+</table>
+
+<span><%= link "New Shelterlocation", to: Routes.shelterlocation_path(@conn, :new) %></span>
+
+<script>
+  var map = L.map('map').setView([35.726012, 139.579484], 13);
+
+  L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+      attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+  }).addTo(map);
+
+<%= for loction <- deta do %>
+
+  L.marker([<%= loction.lat%>, <%= loction.long%>]).addTo(map)
+      .bindPopup('<%= loction.shelterName %><br><%= loction.streetAddress %>', {autoClose: false, closeOnClick: false})
+      .openPopup();
+<% end %>
+</script>
+
